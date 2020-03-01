@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:guitar_tutor/core/chords.dart';
+import 'package:guitar_tutor/core/scales.dart';
 import 'package:guitar_tutor/widgets/board.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,6 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _isLefty = false;
+  bool _showChord = false;
   List<DropdownMenuItem> scaleOptions = [];
   List<DropdownMenuItem> keyOptions = [];
   List<DropdownMenuItem> chordOptions = [];
@@ -25,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void createScaleOptions() {
-    scaleOptions = ['Ionian', 'Dorian', 'Phrygian', 'Lydian', 'MixoLydian', 'Aeolian', 'Locrian']
+    scaleOptions = Scales.scales.keys
         .map((String scale) => DropdownMenuItem(
               child: Text(scale),
               value: scale,
@@ -45,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void createChordOptions() {
-    chordOptions = ['Minor', 'Major', 'Minor7', 'Major7', 'Dominant']
+    chordOptions = Chords.chords.keys
         .map((String chord) => DropdownMenuItem(
               child: Text(chord),
               value: chord,
@@ -58,7 +61,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Board'),
       ),
       body: SafeArea(
         child: Column(
@@ -84,9 +87,21 @@ class _HomePageState extends State<HomePage> {
                   onChanged: (dynamic value) {
                     setState(() {
                       selectedScale = value;
+                      _showChord = false;
                     });
                   },
                   value: selectedScale,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                PlatformSwitch(
+                  value: _showChord,
+                  onChanged: (dynamic value){
+                    setState(() {
+                      _showChord = value;
+                    });
+                  },
                 ),
                 SizedBox(
                   width: 20,
@@ -96,6 +111,7 @@ class _HomePageState extends State<HomePage> {
                   onChanged: (dynamic value) {
                     setState(() {
                       selectedChord = value;
+                      _showChord = true;
                     });
                   },
                   value: selectedChord,
@@ -116,11 +132,15 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
             ),
-            Board(
-              musicKey: selectedKey,
-              chord: selectedChord,
-              scale: selectedScale,
-              isLefty: _isLefty,
+            SizedBox(height: 10,),
+            Expanded(
+              child: Board(
+                musicKey: selectedKey,
+                chord: selectedChord,
+                scale: selectedScale,
+                isLefty: _isLefty,
+                showChord: _showChord
+              ),
             ),
           ],
         ),
